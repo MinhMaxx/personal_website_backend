@@ -1,0 +1,28 @@
+{
+  "develop": {
+    "name": "Personal Website Backend - Dev Mode",
+    "port": 3000,
+    "mode": "development",
+    "protocol": "http",
+    "serverUrl": "",
+    "serverUrlWebUrlLink": "",
+    "mongo": {
+      "host": "",
+      "port": "",
+      "user": "",
+      "password": "",
+      "database": "",
+      "additionalParameters": ""
+    },
+    "admin": {
+      "username": "",
+      "password": ""
+    },
+    "notifyEmailAccount": {
+      "service": "",
+      "email": "",
+      "password": ""
+    },
+    "contactEmail": ""
+  }
+}

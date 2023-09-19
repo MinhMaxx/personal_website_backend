@@ -1,0 +1,28 @@
+{
+  "production": {
+    "name": "Personal Website Backend - Production Mode",
+    "port": 3000,
+    "mode": "Production",
+    "protocol": "https",
+    "serverUrl": "",
+    "serverUrlWebUrlLink": "",
+    "mongo": {
+      "host": "",
+      "port": "",
+      "user": "",
+      "password": "",
+      "database": "",
+      "additionalParameters": ""
+    },
+    "admin": {
+      "username": "",
+      "password": ""
+    },
+    "notifyEmailAccount": {
+      "service": "",
+      "email": "",
+      "password": ""
+    },
+    "contactEmail": ""
+  }
+}

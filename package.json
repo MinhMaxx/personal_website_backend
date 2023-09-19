@@ -1,0 +1,28 @@
+{
+  "name": "personal_website_backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/server.js",
+  "scripts": {
+    "develop": "cross-env NODE_ENV=develop nodemon src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MinhMaxx/personal_website_backend.git"
+  },
+  "author": "Minh Nguyen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MinhMaxx/personal_website_backend/issues"
+  },
+  "homepage": "https://github.com/MinhMaxx/personal_website_backend#readme",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "helmet": "^7.0.0",
+    "mongoose": "^7.5.1",
+    "nodemailer": "^6.9.5",
+    "nodemon": "^3.0.1"
+  }
+}
