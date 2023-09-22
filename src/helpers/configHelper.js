@@ -4,53 +4,56 @@ const path = require("path");
 // Set the current environment, defaulting to "development" if not explicitly set
 const env = process.env.NODE_ENV || "development";
 
-// Determine the path of the appropriate config file based on the environment
 const configFile = path.join(__dirname, "../../config", `${env}.json`);
-// Read the content of the config file synchronously and convert it to string
 const rawData = fs.readFileSync(configFile, "utf-8");
-// Parse the string content to obtain a JavaScript object
 const configData = JSON.parse(rawData);
-
-// Extract the configuration specific to the current environment
 const currentConfig = configData[env];
 
 // Exporting various functions to fetch specific configuration values
 module.exports = {
   // Fetch application name
-  getAppName: () => currentConfig.name,
+  getAppName: () => process.env.NAME || currentConfig.name,
   // Fetch port number
-  getPort: () => currentConfig.port,
+  getPort: () => process.env.PORT || currentConfig.port,
   // Fetch mode (e.g. development or production)
-  getMode: () => currentConfig.mode,
+  getMode: () => process.env.MODE || currentConfig.mode,
   // Fetch the protocol (e.g. http or https)
-  getProtocol: () => currentConfig.protocol,
+  getProtocol: () => process.env.PROTOCOL || currentConfig.protocol,
   // Fetch the server URL
-  getServerUrl: () => currentConfig.serverUrl,
+  getServerUrl: () => process.env.SERVER_URL || currentConfig.serverUrl,
   // Fetch the server web URL link
-  getServerWebUrlLink: () => currentConfig.serverUrlWebUrlLink,
+  getServerWebUrlLink: () =>
+    process.env.SERVER_URL_WEB_URL_LINK || currentConfig.serverUrlWebUrlLink,
   // Fetch MongoDB specific configurations
   getMongoConfig: () => ({
-    multipleStatements: currentConfig.mongo.multipleStatements,
-    host: currentConfig.mongo.host,
-    port: currentConfig.mongo.port,
-    user: currentConfig.mongo.user,
-    password: currentConfig.mongo.password,
-    database: currentConfig.mongo.database,
-    additionalParameters: currentConfig.mongo.additionalParameters,
+    host: process.env.MONGO_HOST || currentConfig.mongo.host,
+    port: process.env.MONGO_PORT || currentConfig.mongo.port,
+    user: process.env.MONGO_USER || currentConfig.mongo.user,
+    password: process.env.MONGO_PASSWORD || currentConfig.mongo.password,
+    database: process.env.MONGO_DATABASE || currentConfig.mongo.database,
+    additionalParameters:
+      process.env.MONGO_ADDITIONAL_PARAMETERS ||
+      currentConfig.mongo.additionalParameters,
   }),
   // Fetch admin credentials (username and password)
   getAdminCredentials: () => ({
-    username: currentConfig.admin.username,
-    password: currentConfig.admin.password,
+    username: process.env.ADMIN_USERNAME || currentConfig.admin.username,
+    password: process.env.ADMIN_PASSWORD || currentConfig.admin.password,
   }),
   // Fetch notification email account details (service, email, password)
   getNotifyEmailAccount: () => ({
-    service: currentConfig.notifyEmailAccount.service,
-    email: currentConfig.notifyEmailAccount.email,
-    password: currentConfig.notifyEmailAccount.password,
+    service:
+      process.env.NOTIFY_EMAIL_SERVICE ||
+      currentConfig.notifyEmailAccount.service,
+    email: process.env.NOTIFY_EMAIL || currentConfig.notifyEmailAccount.email,
+    password:
+      process.env.NOTIFY_EMAIL_PASSWORD ||
+      currentConfig.notifyEmailAccount.password,
   }),
   // Fetch the contact email address
-  getContactEmail: () => currentConfig.contactEmail,
-  getTokenExpireDate: () => currentConfig.tokenExpireDate, // Added method to get token expiry
-  getJwtSecret: () => currentConfig.jwtSecret, // Added method to get JWT secret
+  getContactEmail: () =>
+    process.env.CONTACT_EMAIL || currentConfig.contactEmail,
+  getTokenExpireDate: () =>
+    process.env.TOKEN_EXPIRE_DATE || currentConfig.tokenExpireDate, // Added method to get token expiry
+  getJwtSecret: () => process.env.JWT_SECRET || currentConfig.jwtSecret, // Added method to get JWT secret
 };
