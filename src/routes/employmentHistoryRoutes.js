@@ -16,12 +16,6 @@ router.get("/:id", (req, res) => {
 
 // Add a new employment history entry
 router.post("", authenticateAdmin, (req, res) => {
-  // If the user is not an admin, respond with a 403 Forbidden status and a relevant message
-  if (!req.user.isAdmin) {
-    return res
-      .status(403)
-      .send("You need admin privileges to access this route.");
-  }
   // TODO: Add the new employment history entry to the database
   res.send("New employment history added");
 });
