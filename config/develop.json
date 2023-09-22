@@ -23,6 +23,8 @@
       "email": "",
       "password": ""
     },
-    "contactEmail": ""
+    "contactEmail": "",
+    "tokenExpireDate": "",
+    "jwtSecret": ""
   }
 }

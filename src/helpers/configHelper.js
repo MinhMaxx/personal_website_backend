@@ -51,4 +51,6 @@ module.exports = {
   }),
   // Fetch the contact email address
   getContactEmail: () => currentConfig.contactEmail,
+  getTokenExpireDate: () => currentConfig.tokenExpireDate, // Added method to get token expiry
+  getJwtSecret: () => currentConfig.jwtSecret, // Added method to get JWT secret
 };
