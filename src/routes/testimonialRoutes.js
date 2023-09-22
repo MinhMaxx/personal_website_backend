@@ -63,7 +63,9 @@ router.post(
         html: `
         <p>Hi ${name},</p>
         <p>Your testimonial for Minh Nguyen is: "${testimony}"</p>
-        <a href="${configHelper.getProtocol()}://${configHelper.getServerWebUrlLink()}/testimonial/verify/${token}">Click here to verify your testimonial.</a>
+        <a href="${configHelper.getProtocol()}://${configHelper.getServerUrl()}:${
+          configHelper.getPort
+        }/testimonial/verify/${token}">Click here to verify your testimonial.</a>
         <p>Thank you,</p>
         <p>Minh Nguyen.</p>`,
       };
