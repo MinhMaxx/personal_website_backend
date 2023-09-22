@@ -1,38 +1,41 @@
-// Import necessary modules
+const jwt = require("jsonwebtoken");
 const configHelper = require("./configHelper");
+const BlacklistedToken = require("../models/blackListedTokẹn");
 
 // Middleware function to authenticate admin requests
-module.exports = (req, res, next) => {
-  // Extract admin credentials from the configuration
-  const { username, password } = configHelper.getAdminCredentials();
-
+module.exports = async (req, res, next) => {
   // Retrieve the 'authorization' header from the incoming request
   const authHeader = req.headers["authorization"];
 
-  // Check if the 'authorization' header is missing
-  if (!authHeader) {
+  // Check if the 'authorization' header is missing or doesn't start with 'Bearer'
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res
       .status(401)
-      .json({ message: "Authentication header is missing" });
+      .json({ message: "Authentication token is missing or invalid" });
   }
 
-  // Parse the 'authorization' header, which is expected to be in the format: Basic base64(username:password)
-  const base64Credentials = authHeader.split(" ")[1];
-  // Convert the base64 encoded string back to its original form (ascii)
-  const credentials = Buffer.from(base64Credentials, "base64").toString(
-    "ascii"
-  );
-  // Split the credentials into username and password
-  const [inputUsername, inputPassword] = credentials.split(":");
+  // Extract the token from the header
+  const token = authHeader.split(" ")[1];
 
-  // Compare the provided credentials with the expected credentials
-  if (inputUsername !== username || inputPassword !== password) {
-    return res.status(401).json({ message: "Incorrect credentials" });
+  const blacklistedToken = await BlacklistedToken.findOne({ token: token });
+  if (blacklistedToken) {
+    return res
+      .status(401)
+      .json({ message: "Session expired. Please log in again." });
   }
 
-  // If authentication is successful, attach a user object to the request object
-  req.user = { isAdmin: true };
+  // Verify the token using JWT
+  jwt.verify(token, configHelper.getJwtSecret(), (err, decoded) => {
+    if (err) {
+      return res
+        .status(401)
+        .json({ message: "Authentication failed. Invalid token." });
+    }
 
-  // Move to the next middleware or route handler
-  next();
+    // If token verification is successful, attach the decoded payload to the request object
+    req.user = decoded;
+
+    // Move to the next middleware or route handler
+    next();
+  });
 };
