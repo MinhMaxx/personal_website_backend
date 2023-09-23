@@ -5,15 +5,16 @@ const Testimony = require("../models/testimony");
 const TestimonyToken = require("../models/testimonyToken");
 const nodemailer = require("nodemailer");
 const configHelper = require("../helpers/configHelper");
+const authenticateAdmin = require("../helpers/authMiddleware");
 const { check, validationResult } = require("express-validator");
 
-// Fetch all testimonials
+// Fetch all testimonies
 router.get("/", async (req, res) => {
   try {
-    const testimonials = await Testimony.find(); // Fetch only verified testimonials
-    res.status(200).json(testimonials);
+    const testimonies = await Testimony.find(); // Fetch only verified testimonies
+    res.status(200).json(testimonies);
   } catch (err) {
-    res.status(500).send("Error fetching testimonials");
+    res.status(500).send("Error fetching testimony");
   }
 });
 
@@ -49,26 +50,31 @@ router.post(
       await verifyToken.save();
 
       const transporter = nodemailer.createTransport({
-        service: configHelper.getNotifyEmailAccount.service,
+        service: configHelper.getNotifyEmailAccount().service,
         auth: {
           user: configHelper.getNotifyEmailAccount().email,
           pass: configHelper.getNotifyEmailAccount().password,
         },
       });
 
+      const verificationLink =
+        configHelper.getMode() == "development"
+          ? `${configHelper.getProtocol()}://${configHelper.getServerUrl()}:${configHelper.getPort()}/testimonial/verify/${token}`
+          : `${configHelper.getProtocol()}://${configHelper.getServerUrl()}/testimonial/verify/${token}`;
+
       const mailOptions = {
         from: configHelper.getNotifyEmailAccount().email,
         to: email,
-        subject: "Verify your testimonial for Binh Minh Nguyen",
+        subject: "Verify your testimony for Binh Minh Nguyen",
         html: `
         <p>Hi ${name},</p>
-        <p>Your testimonial for Minh Nguyen is: "${testimony}"</p>
-        <a href="${configHelper.getProtocol()}://${configHelper.getServerUrl()}:${
-          configHelper.getPort
-        }/testimonial/verify/${token}">Click here to verify your testimonial.</a>
+        <p>Your testimony for Minh Nguyen is: "${testimony}"</p>
+        <a href="${verificationLink}">Click here to verify your testimony.</a>
         <p>Thank you,</p>
         <p>Minh Nguyen.</p>`,
       };
+
+      console.log();
 
       await transporter.sendMail(mailOptions);
 
@@ -76,6 +82,7 @@ router.post(
         .status(200)
         .send("Testimony submitted! Please check your email for verification.");
     } catch (err) {
+      console.log(err);
       res.status(500).send(err.message);
     }
   }
@@ -106,6 +113,17 @@ router.get("/verify/:token", async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).send(err.message);
+  }
+});
+
+// Delete a project by ID
+router.delete("/:id", authenticateAdmin, async (req, res) => {
+  try {
+    const testimony = await Testimony.findByIdAndDelete(req.params.id);
+    if (!testimony) return res.status(404).send("Testimony not found");
+    res.send(`Deleted testimony with ID: ${req.params.id}`);
+  } catch (err) {
+    res.status(500).send("Error deleting the testimony");
   }
 });
 

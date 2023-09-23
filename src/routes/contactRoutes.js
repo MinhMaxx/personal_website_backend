@@ -2,6 +2,7 @@
 const express = require("express");
 const router = express.Router();
 const configHelper = require("../helpers/configHelper");
+const nodemailer = require("nodemailer");
 
 // Define a route to serve the contact form page
 router.get("/", (req, res) => {
