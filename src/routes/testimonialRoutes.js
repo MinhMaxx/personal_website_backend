@@ -37,7 +37,7 @@ router.post(
 
       // Generate a random token for verification
       const token = crypto.randomBytes(16).toString("hex");
-      const expiryDate = Date.now() + 300; // Token valid for 5 minutes
+      const expiryDate = Date.now() + 300000; // Token valid for 5 minutes
 
       const verifyToken = new TestimonyToken({
         name,
@@ -95,7 +95,13 @@ router.get("/verify/:token", async (req, res) => {
     });
 
     if (!verifyToken) {
-      return res.status(400).send("Invalid or expired token.");
+      return res.status(400).send("Invalid token.");
+    }
+
+    // Check for token expiry
+    if (Date.now() > verifyToken.expiryDate) {
+      // If the current time is greater than the token's expiry time, the token has expired.
+      return res.status(400).send("Token has expired.");
     }
 
     const testimony = new Testimony({
