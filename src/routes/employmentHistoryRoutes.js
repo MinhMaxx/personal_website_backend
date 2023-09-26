@@ -1,48 +1,123 @@
 const express = require("express");
 const router = express.Router();
 const authenticateAdmin = require("../helpers/authMiddleware");
+const EmploymentHistory = require("../models/employmentHistory");
+const { body, validationResult } = require("express-validator");
+
+const employmentHistoryValidation = [
+  body("position")
+    .isString()
+    .withMessage("Position must be a string")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("Position is required"),
+
+  body("company")
+    .isString()
+    .withMessage("Company must be a string")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("Company is required"),
+
+  body("startDate").isDate().withMessage("Start Date must be a valid date"),
+
+  body("endDate")
+    .optional({ checkFalsy: true })
+    .isDate()
+    .withMessage("End Date must be a valid date"),
+
+  body("description")
+    .isString()
+    .withMessage("Description must be a string")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("Description is required"),
+];
 
 // Fetch all employment histories
-router.get("/", (req, res) => {
-  // TODO: Fetch employment histories from the database and return them
-  res.send("List of all employment histories");
+router.get("/", async (req, res) => {
+  try {
+    const histories = await EmploymentHistory.find();
+    res.json(histories);
+  } catch (err) {
+    res.status(500).send("Error fetching employment histories");
+  }
 });
 
 // Fetch a specific employment history by ID
-router.get("/:id", (req, res) => {
-  // TODO: Fetch the specific employment history by ID from the database and return it
-  res.send(`Employment history details for ID: ${req.params.id}`);
+router.get("/:id", async (req, res) => {
+  try {
+    const history = await EmploymentHistory.findById(req.params.id);
+    if (!history) return res.status(404).send("Employment history not found");
+    res.json(history);
+  } catch (err) {
+    res.status(500).send("Error fetching the employment history");
+  }
 });
 
 // Add a new employment history entry
-router.post("", authenticateAdmin, (req, res) => {
-  // TODO: Add the new employment history entry to the database
-  res.send("New employment history added");
-});
+router.post(
+  "",
+  authenticateAdmin,
+  employmentHistoryValidation,
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const history = new EmploymentHistory(req.body);
+    try {
+      await history.save();
+      res
+        .status(201)
+        .send(
+          `New employment history for ${history.company} added successfully`
+        );
+    } catch (err) {
+      res.status(500).send("Error saving the employment history");
+    }
+  }
+);
 
 // Update an existing employment history by ID
-router.put("/:id", authenticateAdmin, (req, res) => {
-  // If the user is not an admin, respond with a 403 Forbidden status and a relevant message
-  if (!req.user.isAdmin) {
-    return res
-      .status(403)
-      .send("You need admin privileges to access this route.");
+router.put(
+  "/:id",
+  authenticateAdmin,
+  employmentHistoryValidation,
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+      const updatedHistory = await EmploymentHistory.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true }
+      );
+      if (!updatedHistory)
+        return res.status(404).send("Employment history not found");
+      res.send(
+        `Updated employment history for ${updatedHistory.company} successfully!`
+      );
+    } catch (err) {
+      res.status(500).send("Error updating the employment history");
+    }
   }
-  // TODO: Update the specified employment history in the database
-  res.send(`Updated employment history with ID: ${req.params.id}`);
-});
+);
 
 // Delete a specific employment history by ID
-router.delete("/:id", authenticateAdmin, (req, res) => {
-  // If the user is not an admin, respond with a 403 Forbidden status and a relevant message
-  if (!req.user.isAdmin) {
-    return res
-      .status(403)
-      .send("You need admin privileges to access this route.");
+router.delete("/:id", authenticateAdmin, async (req, res) => {
+  try {
+    const history = await EmploymentHistory.findByIdAndDelete(req.params.id);
+    if (!history) return res.status(404).send("Employment history not found");
+    res.send(`Deleted employment history with ID: ${req.params.id}`);
+  } catch (err) {
+    res.status(500).send("Error deleting the employment history");
   }
-  // TODO: Delete the specified employment history from the database
-  res.send(`Deleted employment history with ID: ${req.params.id}`);
 });
 
-// Export the router to be used in the main server file
+// Export the router to be used in other parts of the application
 module.exports = router;
