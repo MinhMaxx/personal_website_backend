@@ -1,6 +1,9 @@
 const express = require("express");
+const cors = require("cors");
 const adminRoutes = require("./routes/adminRoutes");
+const certificateRoutes = require("./routes/certificateRoutes");
 const contactRoutes = require("./routes/contactRoutes");
+const degreeRoutes = require("./routes/degreeRoutes");
 const employmentHistoryRoutes = require("./routes/employmentHistoryRoutes");
 const projectRoutes = require("./routes/projectRoutes");
 const testimonialRoutes = require("./routes/testimonialRoutes");
@@ -11,6 +14,9 @@ const bodyParser = require("body-parser");
 // Initialize the Express app
 const app = express();
 
+// Enable All CORS Requests
+app.use(cors());
+
 // Middleware to parse JSON payloads
 app.use(bodyParser.json());
 
@@ -19,10 +25,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Mounting specific routes
 app.use("/admin", adminRoutes); // Routes for admin-related tasks
+app.use("/certificate", certificateRoutes); // Routes for handling contact requests
 app.use("/contact", contactRoutes); // Routes for handling contact requests
-app.use("/employment", employmentHistoryRoutes); // Routes for managing employment histor
-app.use("/project", projectRoutes); // Routes for managing projects
-app.use("/testimonial", testimonialRoutes); // Routes for managing testimonials
+app.use("/degree", degreeRoutes); // Routes for academic achivement
+app.use("/employment", employmentHistoryRoutes); // Routes for employment history
+app.use("/project", projectRoutes); // Routes for projects
+app.use("/testimonial", testimonialRoutes); // Routes for testimonials
 
 // Function to start the server and establish a connection to the MongoDB database
 const startServer = async () => {
