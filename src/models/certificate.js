@@ -15,6 +15,10 @@ const certificateSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  description: {
+    type: String,
+    trim: true,
+  },
   link: {
     type: String,
     trim: true,
