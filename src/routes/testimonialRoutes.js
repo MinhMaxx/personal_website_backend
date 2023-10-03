@@ -8,10 +8,18 @@ const configHelper = require("../helpers/configHelper");
 const authenticateAdmin = require("../helpers/authMiddleware");
 const { check, validationResult } = require("express-validator");
 
+const transporter = nodemailer.createTransport({
+  service: configHelper.getNotifyEmailAccount().service,
+  auth: {
+    user: configHelper.getNotifyEmailAccount().email,
+    pass: configHelper.getNotifyEmailAccount().password,
+  },
+});
+
 // Fetch all testimonies
 router.get("/", async (req, res) => {
   try {
-    const testimonies = await Testimony.find(); // Fetch only verified testimonies
+    const testimonies = await Testimony.find({ adminApproved: true }); // Fetch only verified and admin aprroved testimonies
     res.status(200).json(testimonies);
   } catch (err) {
     res.status(500).send("Error fetching testimony");
@@ -33,7 +41,23 @@ router.post(
     }
 
     try {
-      const { name, email, testimony } = req.body;
+      const { name, email, company, position, testimony } = req.body;
+
+      // Check if a testimony with the provided email already exists
+      const existingTestimony = await Testimony.findOne({ email });
+      if (existingTestimony) {
+        return res
+          .status(400)
+          .send("A testimony with this email already exists.");
+      }
+
+      // Check if a testimony token with the provided email already exists
+      const existingTestimonyToken = await TestimonyToken.findOne({ email });
+      if (existingTestimonyToken) {
+        return res
+          .status(400)
+          .send("A testimony with this email is awaiting verification.");
+      }
 
       // Generate a random token for verification
       const token = crypto.randomBytes(16).toString("hex");
@@ -42,20 +66,14 @@ router.post(
       const verifyToken = new TestimonyToken({
         name,
         email,
+        company,
+        position,
         testimony,
         token,
         expiryDate,
       });
 
       await verifyToken.save();
-
-      const transporter = nodemailer.createTransport({
-        service: configHelper.getNotifyEmailAccount().service,
-        auth: {
-          user: configHelper.getNotifyEmailAccount().email,
-          pass: configHelper.getNotifyEmailAccount().password,
-        },
-      });
 
       const verificationLink =
         configHelper.getMode() == "development"
@@ -104,21 +122,79 @@ router.get("/verify/:token", async (req, res) => {
       return res.status(400).send("Token has expired.");
     }
 
+    const sevenDaysFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
     const testimony = new Testimony({
       name: verifyToken.name,
       email: verifyToken.email,
+      company: verifyToken.company,
+      position: verifyToken.position,
       content: verifyToken.testimony,
+      adminApproved: false,
+      expireAt: sevenDaysFromNow,
     });
 
     await testimony.save();
 
+    // Notify admin of the new pending testimony
+    const adminEmail = configHelper.getContactEmail();
+    const subject = "New Pending Testimony for Approval";
+    const html = `
+      <p>There is a new testimony pending approval from ${testimony.name} (${testimony.email}).</p>
+      <p>Testimony: "${testimony.content}"</p>
+    `; // Modify the URL to where the admin can approve the testimony
+
+    const mailOptions = {
+      from: configHelper.getNotifyEmailAccount().email,
+      to: adminEmail,
+      subject,
+      html,
+    };
+
+    await transporter.sendMail(mailOptions);
+
     // Delete the verification token after use
     await TestimonyToken.deleteOne({ _id: verifyToken._id });
 
-    res.status(200).send("Testimony verified and saved!");
+    res
+      .status(200)
+      .send("Testimony verified and saved! Awaiting admin approval.");
   } catch (err) {
     console.log(err);
     res.status(500).send(err.message);
+  }
+});
+
+// Fetch all non-approved testimonies
+router.get("/pending", authenticateAdmin, async (req, res) => {
+  try {
+    const testimonies = await Testimony.find({ adminApproved: false });
+    res.status(200).json(testimonies);
+  } catch (err) {
+    res.status(500).send("Error fetching pending testimonies");
+  }
+});
+
+// Approve a testimony by ID
+router.put("/approve/:id", authenticateAdmin, async (req, res) => {
+  try {
+    const testimony = await Testimony.findByIdAndUpdate(
+      req.params.id,
+      {
+        adminApproved: true,
+        $unset: { expireAt: 1 }, // Remove the expireAt field to ensure the testimony is not auto-deleted
+      },
+      { new: true }
+    );
+
+    if (!testimony) return res.status(404).send("Testimony not found");
+
+    res.status(200).json({
+      message: "Testimony approved successfully!",
+      testimony,
+    });
+  } catch (err) {
+    res.status(500).send("Error approving the testimony");
   }
 });
 

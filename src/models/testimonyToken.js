@@ -8,6 +8,17 @@ const testimonyTokenSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
+    unique: true,
+  },
+  company: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  position: {
+    type: String,
+    required: true,
+    trim: true,
   },
   testimony: {
     type: String,

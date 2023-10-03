@@ -8,7 +8,18 @@ const testimonySchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    match: [/\S+@\S+\.\S+/, "Email is invalid"], // Basic email validation
+    match: [/\S+@\S+\.\S+/, "Email is invalid"],
+    unique: true,
+  },
+  company: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  position: {
+    type: String,
+    required: true,
+    trim: true,
   },
   content: {
     type: String,
@@ -17,6 +28,15 @@ const testimonySchema = new mongoose.Schema({
   date: {
     type: Date,
     default: Date.now,
+  },
+  adminApproved: {
+    type: Boolean,
+    default: false,
+  },
+  expireAt: {
+    type: Date,
+    default: undefined,
+    index: { expireAfterSeconds: 0 },
   },
 });
 
