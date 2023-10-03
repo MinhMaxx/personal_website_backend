@@ -21,9 +21,7 @@ exports.mongooseConnection = async () => {
   const port = mongoConfig.port ? `:${mongoConfig.port}` : "";
 
   // Construct the full MongoDB connection URI
-  var mongoDB = `mongodb+srv://${userPass}${mongoConfig.host}${
-    mongoConfig.port ? mongoConfig.port + "/" : ""
-  }${mongoConfig.database}${authSource}${mongoConfig.additionalParameters}`;
+  var mongoDB = `mongodb+srv://${userPass}${mongoConfig.host}${port}/${mongoConfig.database}${authSource}${mongoConfig.additionalParameters}`;
 
   //Invoked function expression to handle the actual connection
   (async () => {
