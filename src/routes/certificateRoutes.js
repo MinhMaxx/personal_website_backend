@@ -29,7 +29,7 @@ const certificateValidation = [
 // Fetch all certificates
 router.get("/", async (req, res) => {
   try {
-    const certificates = await Certificate.find();
+    const certificates = await Certificate.find().sort({ dateReceived: -1 });
     res.json(certificates);
   } catch (err) {
     res.status(500).send("Error fetching certificates");

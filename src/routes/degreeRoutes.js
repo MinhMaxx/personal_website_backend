@@ -21,7 +21,7 @@ const degreeValidation = [
 // Fetch all degrees
 router.get("/", async (req, res) => {
   try {
-    const degrees = await Degree.find();
+    const degrees = await Degree.find().sort({ startDate: 1 }); // Sort degrees by startDate in ascending order
     res.json(degrees);
   } catch (err) {
     res.status(500).send("Error fetching degrees");

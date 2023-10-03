@@ -14,6 +14,7 @@ const certificateSchema = new mongoose.Schema({
   dateReceived: {
     type: Date,
     required: true,
+    index: true,
   },
   description: {
     type: String,

@@ -37,7 +37,7 @@ const employmentHistoryValidation = [
 // Fetch all employment histories
 router.get("/", async (req, res) => {
   try {
-    const histories = await EmploymentHistory.find();
+    const histories = await EmploymentHistory.find().sort({ startDate: -1 }); // Sorting by startDate in descending order
     res.json(histories);
   } catch (err) {
     res.status(500).send("Error fetching employment histories");

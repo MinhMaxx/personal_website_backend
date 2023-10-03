@@ -19,6 +19,7 @@ const degreeSchema = new mongoose.Schema({
   startDate: {
     type: Date,
     required: true,
+    index: true,
   },
   endDate: {
     type: Date,
