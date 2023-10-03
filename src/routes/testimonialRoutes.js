@@ -41,7 +41,7 @@ router.post(
     }
 
     try {
-      const { name, email, company, position, testimony } = req.body;
+      const { name, email, company, position, link, testimony } = req.body;
 
       // Check if a testimony with the provided email already exists
       const existingTestimony = await Testimony.findOne({ email });
@@ -68,6 +68,7 @@ router.post(
         email,
         company,
         position,
+        link,
         testimony,
         token,
         expiryDate,
@@ -129,6 +130,7 @@ router.get("/verify/:token", async (req, res) => {
       email: verifyToken.email,
       company: verifyToken.company,
       position: verifyToken.position,
+      link: verifyToken.link,
       content: verifyToken.testimony,
       adminApproved: false,
       expireAt: sevenDaysFromNow,

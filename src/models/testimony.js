@@ -21,6 +21,10 @@ const testimonySchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  link: {
+    type: String,
+    trim: true,
+  },
   content: {
     type: String,
     required: true,

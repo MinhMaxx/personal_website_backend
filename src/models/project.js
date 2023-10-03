@@ -22,6 +22,7 @@ const projectSchema = new mongoose.Schema({
   },
   link: {
     type: String,
+    trim: true,
   },
 });
 
