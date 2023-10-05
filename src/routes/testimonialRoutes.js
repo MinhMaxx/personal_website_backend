@@ -118,7 +118,7 @@ router.get("/verify/:token", async (req, res) => {
     if (!verifyToken) {
       return res
         .status(400)
-        .send("TThe verification link has expired, , please try again");
+        .send("The verification link has expired, please try again");
     }
 
     // Check for token expiry
@@ -126,7 +126,7 @@ router.get("/verify/:token", async (req, res) => {
       // If the current time is greater than the token's expiry time, the token has expired.
       return res
         .status(400)
-        .send("The verification link has expired, , please try again");
+        .send("The verification link has expired, please try again");
     }
 
     const sevenDaysFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
@@ -164,9 +164,7 @@ router.get("/verify/:token", async (req, res) => {
     // Delete the verification token after use
     await TestimonialToken.deleteOne({ _id: verifyToken._id });
 
-    res
-      .status(200)
-      .send("Testimonial verified and saved! Awaiting admin approval.");
+    res.status(200).send("Testimonial verified! Awaiting admin approval.");
   } catch (err) {
     console.log(err);
     res.status(500).send(err.message);
