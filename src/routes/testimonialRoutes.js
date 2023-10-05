@@ -92,6 +92,7 @@ router.post(
         <p>Hi ${name},</p>
         <p>Your testimonial for Minh Nguyen is: "${testimonial}"</p>
         <a href="${verificationLink}">Click here to verify your testimonial.</a>
+        <p>The link will be expired in 5 minutes</p>
         <p>Thank you,</p>
         <p>Minh Nguyen.</p>`,
       };
@@ -100,11 +101,7 @@ router.post(
 
       await transporter.sendMail(mailOptions);
 
-      res
-        .status(200)
-        .send(
-          "Testimonial submitted! Please check your email for verification."
-        );
+      res.status(200).send("Please check your email for verification.");
     } catch (err) {
       console.log(err);
       res.status(500).send(err.message);
@@ -119,13 +116,17 @@ router.get("/verify/:token", async (req, res) => {
     });
 
     if (!verifyToken) {
-      return res.status(400).send("Invalid token.");
+      return res
+        .status(400)
+        .send("TThe verification link has expired, , please try again");
     }
 
     // Check for token expiry
     if (Date.now() > verifyToken.expiryDate) {
       // If the current time is greater than the token's expiry time, the token has expired.
-      return res.status(400).send("Token has expired.");
+      return res
+        .status(400)
+        .send("The verification link has expired, , please try again");
     }
 
     const sevenDaysFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
