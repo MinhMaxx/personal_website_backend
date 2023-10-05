@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const testimonySchema = new mongoose.Schema({
+const testimonialSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -44,6 +44,6 @@ const testimonySchema = new mongoose.Schema({
   },
 });
 
-const Testimony = mongoose.model("Testimony", testimonySchema);
+const Testimonial = mongoose.model("Testimonial", testimonialSchema);
 
-module.exports = Testimony;
+module.exports = Testimonial;

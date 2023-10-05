@@ -56,4 +56,7 @@ module.exports = {
   getTokenExpireDate: () =>
     process.env.TOKEN_EXPIRE_DATE || currentConfig.tokenExpireDate, // Added method to get token expiry
   getJwtSecret: () => process.env.JWT_SECRET || currentConfig.jwtSecret, // Added method to get JWT secret
+  getFrontendWebUrlLink: () =>
+    process.env.FRONTEND_URL_WEB_URL_LINK ||
+    currentConfig.frontendUrlWebUrlLink, // Added method to get frontend URL
 };

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const testimonyTokenSchema = new mongoose.Schema({
+const testimonialTokenSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -24,7 +24,7 @@ const testimonyTokenSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
-  testimony: {
+  testimonial: {
     type: String,
     required: true,
   },
@@ -40,6 +40,9 @@ const testimonyTokenSchema = new mongoose.Schema({
   },
 });
 
-const TestimonyToken = mongoose.model("TestimonyToken", testimonyTokenSchema);
+const TestimonialToken = mongoose.model(
+  "TestimonialToken",
+  testimonialTokenSchema
+);
 
-module.exports = TestimonyToken;
+module.exports = TestimonialToken;

@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const crypto = require("crypto");
-const Testimony = require("../models/testimony");
-const TestimonyToken = require("../models/testimonyToken");
+const Testimonial = require("../models/testimonial");
+const TestimonialToken = require("../models/testimonialToken");
 const nodemailer = require("nodemailer");
 const configHelper = require("../helpers/configHelper");
 const authenticateAdmin = require("../helpers/authMiddleware");
@@ -19,10 +19,10 @@ const transporter = nodemailer.createTransport({
 // Fetch all testimonies
 router.get("/", async (req, res) => {
   try {
-    const testimonies = await Testimony.find({ adminApproved: true }); // Fetch only verified and admin aprroved testimonies
+    const testimonies = await Testimonial.find({ adminApproved: true }); // Fetch only verified and admin aprroved testimonies
     res.status(200).json(testimonies);
   } catch (err) {
-    res.status(500).send("Error fetching testimony");
+    res.status(500).send("Error fetching testimonial");
   }
 });
 
@@ -32,7 +32,7 @@ router.post(
     // Validation middleware
     check("name").notEmpty().withMessage("Name is required"),
     check("email").isEmail().withMessage("Provide a valid email address"),
-    check("testimony").notEmpty().withMessage("Testimony cannot be empty"),
+    check("testimonial").notEmpty().withMessage("Testimonial cannot be empty"),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -41,54 +41,57 @@ router.post(
     }
 
     try {
-      const { name, email, company, position, link, testimony } = req.body;
+      const { name, email, company, position, link, testimonial } = req.body;
 
-      // Check if a testimony with the provided email already exists
-      const existingTestimony = await Testimony.findOne({ email });
-      if (existingTestimony) {
+      // Check if a testimonial with the provided email already exists
+      const existingTestimonial = await Testimonial.findOne({ email });
+      if (existingTestimonial) {
         return res
           .status(400)
-          .send("A testimony with this email already exists.");
+          .send("A testimonial with this email already exists.");
       }
 
-      // Check if a testimony token with the provided email already exists
-      const existingTestimonyToken = await TestimonyToken.findOne({ email });
-      if (existingTestimonyToken) {
+      // Check if a testimonial token with the provided email already exists
+      const existingTestimonialToken = await TestimonialToken.findOne({
+        email,
+      });
+      if (existingTestimonialToken) {
         return res
           .status(400)
-          .send("A testimony with this email is awaiting verification.");
+          .send("A testimonial with this email is awaiting verification.");
       }
 
       // Generate a random token for verification
       const token = crypto.randomBytes(16).toString("hex");
       const expiryDate = Date.now() + 300000; // Token valid for 5 minutes
 
-      const verifyToken = new TestimonyToken({
+      const verifyToken = new TestimonialToken({
         name,
         email,
         company,
         position,
         link,
-        testimony,
+        testimonial,
         token,
         expiryDate,
       });
 
       await verifyToken.save();
 
+      //Switch to using frontend link in non-development mode
       const verificationLink =
         configHelper.getMode() == "development"
           ? `${configHelper.getProtocol()}://${configHelper.getServerUrl()}:${configHelper.getPort()}/testimonial/verify/${token}`
-          : `${configHelper.getProtocol()}://${configHelper.getServerUrl()}/testimonial/verify/${token}`;
+          : `${configHelper.getProtocol()}://${configHelper.getFrontendWebUrlLink()}/testimonial/verify/${token}`;
 
       const mailOptions = {
         from: configHelper.getNotifyEmailAccount().email,
         to: email,
-        subject: "Verify your testimony for Binh Minh Nguyen",
+        subject: "Verify your testimonial for Binh Minh Nguyen",
         html: `
         <p>Hi ${name},</p>
-        <p>Your testimony for Minh Nguyen is: "${testimony}"</p>
-        <a href="${verificationLink}">Click here to verify your testimony.</a>
+        <p>Your testimonial for Minh Nguyen is: "${testimonial}"</p>
+        <a href="${verificationLink}">Click here to verify your testimonial.</a>
         <p>Thank you,</p>
         <p>Minh Nguyen.</p>`,
       };
@@ -99,7 +102,9 @@ router.post(
 
       res
         .status(200)
-        .send("Testimony submitted! Please check your email for verification.");
+        .send(
+          "Testimonial submitted! Please check your email for verification."
+        );
     } catch (err) {
       console.log(err);
       res.status(500).send(err.message);
@@ -109,7 +114,7 @@ router.post(
 
 router.get("/verify/:token", async (req, res) => {
   try {
-    const verifyToken = await TestimonyToken.findOne({
+    const verifyToken = await TestimonialToken.findOne({
       token: req.params.token,
     });
 
@@ -125,26 +130,26 @@ router.get("/verify/:token", async (req, res) => {
 
     const sevenDaysFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
-    const testimony = new Testimony({
+    const testimonial = new Testimonial({
       name: verifyToken.name,
       email: verifyToken.email,
       company: verifyToken.company,
       position: verifyToken.position,
       link: verifyToken.link,
-      content: verifyToken.testimony,
+      content: verifyToken.testimonial,
       adminApproved: false,
       expireAt: sevenDaysFromNow,
     });
 
-    await testimony.save();
+    await testimonial.save();
 
-    // Notify admin of the new pending testimony
+    // Notify admin of the new pending testimonial
     const adminEmail = configHelper.getContactEmail();
-    const subject = "New Pending Testimony for Approval";
+    const subject = "New Pending Testimonial for Approval";
     const html = `
-      <p>There is a new testimony pending approval from ${testimony.name} (${testimony.email}).</p>
-      <p>Testimony: "${testimony.content}"</p>
-    `; // Modify the URL to where the admin can approve the testimony
+      <p>There is a new testimonial pending approval from ${testimonial.name} (${testimonial.email}).</p>
+      <p>Testimonial: "${testimonial.content}"</p>
+    `; // Modify the URL to where the admin can approve the testimonial
 
     const mailOptions = {
       from: configHelper.getNotifyEmailAccount().email,
@@ -156,11 +161,11 @@ router.get("/verify/:token", async (req, res) => {
     await transporter.sendMail(mailOptions);
 
     // Delete the verification token after use
-    await TestimonyToken.deleteOne({ _id: verifyToken._id });
+    await TestimonialToken.deleteOne({ _id: verifyToken._id });
 
     res
       .status(200)
-      .send("Testimony verified and saved! Awaiting admin approval.");
+      .send("Testimonial verified and saved! Awaiting admin approval.");
   } catch (err) {
     console.log(err);
     res.status(500).send(err.message);
@@ -170,44 +175,44 @@ router.get("/verify/:token", async (req, res) => {
 // Fetch all non-approved testimonies
 router.get("/pending", authenticateAdmin, async (req, res) => {
   try {
-    const testimonies = await Testimony.find({ adminApproved: false });
+    const testimonies = await Testimonial.find({ adminApproved: false });
     res.status(200).json(testimonies);
   } catch (err) {
     res.status(500).send("Error fetching pending testimonies");
   }
 });
 
-// Approve a testimony by ID
+// Approve a testimonial by ID
 router.put("/approve/:id", authenticateAdmin, async (req, res) => {
   try {
-    const testimony = await Testimony.findByIdAndUpdate(
+    const testimonial = await Testimonial.findByIdAndUpdate(
       req.params.id,
       {
         adminApproved: true,
-        $unset: { expireAt: 1 }, // Remove the expireAt field to ensure the testimony is not auto-deleted
+        $unset: { expireAt: 1 }, // Remove the expireAt field to ensure the testimonial is not auto-deleted
       },
       { new: true }
     );
 
-    if (!testimony) return res.status(404).send("Testimony not found");
+    if (!testimonial) return res.status(404).send("Testimonial not found");
 
     res.status(200).json({
-      message: "Testimony approved successfully!",
-      testimony,
+      message: "Testimonial approved successfully!",
+      testimonial,
     });
   } catch (err) {
-    res.status(500).send("Error approving the testimony");
+    res.status(500).send("Error approving the testimonial");
   }
 });
 
 // Delete a project by ID
 router.delete("/:id", authenticateAdmin, async (req, res) => {
   try {
-    const testimony = await Testimony.findByIdAndDelete(req.params.id);
-    if (!testimony) return res.status(404).send("Testimony not found");
-    res.send(`Deleted testimony with ID: ${req.params.id}`);
+    const testimonial = await Testimonial.findByIdAndDelete(req.params.id);
+    if (!testimonial) return res.status(404).send("Testimonial not found");
+    res.send(`Deleted testimonial with ID: ${req.params.id}`);
   } catch (err) {
-    res.status(500).send("Error deleting the testimony");
+    res.status(500).send("Error deleting the testimonial");
   }
 });
 
