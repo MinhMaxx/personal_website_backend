@@ -6,39 +6,6 @@ This is the backend service for my personal website. The project is designed to 
 
 This backend is essential for the full functionality of the frontend part of the website, which can be found [here](https://github.com/MinhMaxx/personal_website_frontend).
 
-## Directory Structure
-
-.
-├── Procfile # Heroku Procfile
-├── README.md # Documentation
-├── config # Configuration files
-│ ├── develop.json # Development configuration
-│ └── production.json # Production configuration
-├── package-lock.json # Package lock file
-├── package.json # Package information and dependencies
-└── src # Source code
-├── databaseMongo.js # MongoDB database connection
-├── helpers # Helper modules
-│ ├── authMiddleware.js # Authentication middleware
-│ └── configHelper.js # Configuration helper
-├── models # Database models
-│ ├── blackListedToken.js # Blacklisted token model for admin logout control
-│ ├── certificate.js # Certificate model
-│ ├── degree.js # Degree model
-│ ├── employmentHistory.js # Employment history model
-│ ├── project.js # Project model
-│ ├── testimonial.js # Testimonial model
-│ └── testimonialToken.js # Testimonial verify token model
-├── routes # API routes
-│ ├── adminRoutes.js # Admin routes
-│ ├── certificateRoutes.js # Certificate routes
-│ ├── contactRoutes.js # Contact routes
-│ ├── degreeRoutes.js # Degree routes
-│ ├── employmentHistoryRoutes.js # Employment history routes
-│ ├── projectRoutes.js # Project routes
-│ └── testimonialRoutes.js # Testimonial routes
-└── server.js # Server configuration
-
 ## How To Run The Project
 
 ### Prerequisites
