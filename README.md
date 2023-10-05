@@ -35,8 +35,7 @@ This backend is essential for the full functionality of the frontend part of the
 
 4. **Set up Configuration Files:**
 
-   - Rename `develop.json.example` and `production.json.example` to `develop.json` and `production.json`, respectively, in the `config` folder.
-   - Fill out the required configuration fields like MongoDB URI, JWT Secret, etc.
+   - Fill out the required configuration fields in `develop.json` or `production.json` inside the `config` folder like MongoDB URI, JWT Secret, etc.
 
 5. **Run the Project:**
 
