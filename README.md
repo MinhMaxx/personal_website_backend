@@ -4,7 +4,7 @@
 
 This is the backend service for my personal website. The project is designed to manage and deliver data for various sections of the website like testimonials, contact forms, certificates, degrees, employment history, and projects. The backend is built using Node.js and utilizes MongoDB as its database. It is set up for different environments (development and production) and is easily deployable via a Procfile for platforms like Heroku.
 
-This backend is essential for the full functionality of the frontend part of the website, which can be found [here](https://github.com/MinhMaxx/personal_website_frontend).
+This backend is essential for the full functionality of the frontend part of the website, which can be found [here](https://github.com/MinhMaxx/personal-website-frontend).
 
 ## How To Run The Project
 
