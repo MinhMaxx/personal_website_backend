@@ -19,7 +19,7 @@ const transporter = nodemailer.createTransport({
 
 const testimonialLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 3, // limit each IP to 5 requests per windowMs
+  max: 3, // limit each IP to 3 requests per windowMs
   message:
     "Too many testimonials created from this IP, please try again after an hour",
 });
