@@ -7,6 +7,7 @@ const nodemailer = require("nodemailer");
 const configHelper = require("../helpers/configHelper");
 const authenticateAdmin = require("../helpers/authMiddleware");
 const { check, validationResult } = require("express-validator");
+const rateLimit = require("express-rate-limit");
 
 const transporter = nodemailer.createTransport({
   service: configHelper.getNotifyEmailAccount().service,
@@ -14,6 +15,13 @@ const transporter = nodemailer.createTransport({
     user: configHelper.getNotifyEmailAccount().email,
     pass: configHelper.getNotifyEmailAccount().password,
   },
+});
+
+const testimonialLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 3, // limit each IP to 5 requests per windowMs
+  message:
+    "Too many testimonials created from this IP, please try again after an hour",
 });
 
 // Fetch all testimonies
@@ -34,6 +42,7 @@ router.post(
     check("email").isEmail().withMessage("Provide a valid email address"),
     check("testimonial").notEmpty().withMessage("Testimonial cannot be empty"),
   ],
+  testimonialLimiter,
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

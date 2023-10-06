@@ -3,6 +3,14 @@ const express = require("express");
 const router = express.Router();
 const configHelper = require("../helpers/configHelper");
 const nodemailer = require("nodemailer");
+const rateLimit = require("express-rate-limit");
+
+const contactLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5, // limit each IP to 5 requests per windowMs
+  message:
+    "Too many requests created from this IP, please try again after an hour",
+});
 
 // Define a route to serve the contact form page
 router.get("/", (req, res) => {
@@ -11,7 +19,7 @@ router.get("/", (req, res) => {
 });
 
 // Define a route to handle the submission of the contact form
-router.post("/submit", async (req, res) => {
+router.post("/submit", contactLimiter, async (req, res) => {
   try {
     // Destructuring the name, email, and message from the request body
     const { name, email, message } = req.body;
