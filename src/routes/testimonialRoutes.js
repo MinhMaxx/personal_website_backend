@@ -96,14 +96,25 @@ router.post(
       const mailOptions = {
         from: configHelper.getNotifyEmailAccount().email,
         to: email,
-        subject: "Verify your testimonial for Binh Minh Nguyen",
+        subject: "Please Confirm Your Testimonial for Binh Minh Nguyen",
+        text: `Hello ${name},
+
+              Thank you for your kind words about me. Your testimonial is "${testimonial}".
+
+              To confirm your testimonial, please click the following link: ${verificationLink}
+
+              This link will expire in 5 minutes.
+
+              Best regards,
+              Minh Nguyen`,
+
         html: `
-        <p>Hi ${name},</p>
-        <p>Your testimonial for Minh Nguyen is: "${testimonial}"</p>
-        <a href="${verificationLink}">Click here to verify your testimonial.</a>
-        <p>The link will be expired in 5 minutes</p>
-        <p>Thank you,</p>
-        <p>Minh Nguyen.</p>`,
+        <p>Hello ${name},</p>
+        <p>Thank you for your kind words about me. Your testimonial is: "${testimonial}"</p>
+        <p>To confirm your testimonial, please <a href="${verificationLink}" style="text-decoration:none;color:#007BFF;">click here</a>.</p>
+        <p><small>This link will expire in 5 minutes.</small></p>
+        <p>Best regards,</p>
+        <p>Minh Nguyen</p>`,
       };
 
       console.log();
