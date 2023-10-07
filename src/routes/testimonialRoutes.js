@@ -99,19 +99,22 @@ router.post(
         subject: "Please Confirm Your Testimonial for Binh Minh Nguyen",
         text: `Hello ${name},
 
-              Thank you for your kind words about me. Your testimonial is "${testimonial}".
+          Thank you for your kind words about me. Your testimonial is "${testimonial}".
 
-              To confirm your testimonial, please click the following link: ${verificationLink}
+          To confirm your testimonial, please click the following link: ${verificationLink}
 
-              This link will expire in 5 minutes.
+          Or copy and paste the URL into your browser: ${verificationLink}
 
-              Best regards,
-              Minh Nguyen`,
+          This link will expire in 5 minutes.
+
+          Best regards,
+          Minh Nguyen`,
 
         html: `
         <p>Hello ${name},</p>
         <p>Thank you for your kind words about me. Your testimonial is: "${testimonial}"</p>
         <p>To confirm your testimonial, please <a href="${verificationLink}" style="text-decoration:none;color:#007BFF;">click here</a>.</p>
+        <p>Or copy and paste this URL into your browser: <span style="word-wrap:break-word;">${verificationLink}</span></p>
         <p><small>This link will expire in 5 minutes.</small></p>
         <p>Best regards,</p>
         <p>Minh Nguyen</p>`,
