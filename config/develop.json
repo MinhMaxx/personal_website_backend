@@ -26,6 +26,14 @@
     "contactEmail": "",
     "tokenExpireDate": "",
     "jwtSecret": "",
-    "frontendUrlWebUrlLink": ""
+    "frontendUrlWebUrlLink": "",
+    "privateEmail": {
+      "enabled": "",
+      "host": "",
+      "port": "",
+      "user": "",
+      "password": "",
+      "secure": ""
+    }
   }
 }

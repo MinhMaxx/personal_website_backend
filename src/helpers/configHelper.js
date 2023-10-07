@@ -59,4 +59,29 @@ module.exports = {
   getFrontendWebUrlLink: () =>
     process.env.FRONTEND_URL_WEB_URL_LINK ||
     currentConfig.frontendUrlWebUrlLink, // Added method to get frontend URL
+  // Method to check if private email service is enabled
+  isPrivateEmailServiceEnabled: () =>
+    process.env.PRIVATE_EMAIL_ENABLED === "true" ||
+    currentConfig.privateEmail.enabled,
+
+  // Method to get private email service host
+  getPrivateEmailHost: () =>
+    process.env.PRIVATE_EMAIL_HOST || currentConfig.privateEmail.host,
+
+  // Method to get private email service port
+  getPrivateEmailPort: () =>
+    process.env.PRIVATE_EMAIL_PORT || currentConfig.privateEmail.port,
+
+  // Method to get private email service user
+  getPrivateEmailUser: () =>
+    process.env.PRIVATE_EMAIL_USER || currentConfig.privateEmail.user,
+
+  // Method to get private email service password
+  getPrivateEmailPass: () =>
+    process.env.PRIVATE_EMAIL_PASS || currentConfig.privateEmail.password,
+
+  // Method to check if private email service is secure
+  isPrivateEmailSecure: () =>
+    process.env.PRIVATE_EMAIL_SECURE === "true" ||
+    currentConfig.privateEmail.secure,
 };

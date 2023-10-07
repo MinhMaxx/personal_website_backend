@@ -8,14 +8,7 @@ const configHelper = require("../helpers/configHelper");
 const authenticateAdmin = require("../helpers/authMiddleware");
 const { check, validationResult } = require("express-validator");
 const rateLimit = require("express-rate-limit");
-
-const transporter = nodemailer.createTransport({
-  service: configHelper.getNotifyEmailAccount().service,
-  auth: {
-    user: configHelper.getNotifyEmailAccount().email,
-    pass: configHelper.getNotifyEmailAccount().password,
-  },
-});
+const transporter = require("../helpers/mailerSetting");
 
 const testimonialLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour

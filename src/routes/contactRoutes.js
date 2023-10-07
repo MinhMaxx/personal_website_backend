@@ -4,6 +4,7 @@ const router = express.Router();
 const configHelper = require("../helpers/configHelper");
 const nodemailer = require("nodemailer");
 const rateLimit = require("express-rate-limit");
+const transporter = require("../helpers/mailerSetting");
 
 const contactLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
@@ -23,15 +24,6 @@ router.post("/submit", contactLimiter, async (req, res) => {
   try {
     // Destructuring the name, email, and message from the request body
     const { name, email, message } = req.body;
-
-    // Setting up nodemailer transport with configurations fetched from the helper
-    const transporter = nodemailer.createTransport({
-      service: configHelper.getNotifyEmailAccount().service,
-      auth: {
-        user: configHelper.getNotifyEmailAccount().email,
-        pass: configHelper.getNotifyEmailAccount().password,
-      },
-    });
 
     // Mail options specifying sender, recipient, subject, and body
     const mailOptions = {
