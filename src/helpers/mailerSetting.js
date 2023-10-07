@@ -3,7 +3,7 @@ const configHelper = require("./configHelper");
 
 let transporter;
 
-if (configHelper.isPrivateEmailServiceEnabled()) {
+if (configHelper.getPrivateEmailService().enabled) {
   // This is for private email service
   transporter = nodemailer.createTransport({
     host: configHelper.getPrivateEmailService().host,

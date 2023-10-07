@@ -59,11 +59,8 @@ module.exports = {
   getFrontendWebUrlLink: () =>
     process.env.FRONTEND_URL_WEB_URL_LINK ||
     currentConfig.frontendUrlWebUrlLink, // Added method to get frontend URL
-  // Method to check if private email service is enabled
-  isPrivateEmailServiceEnabled: () =>
-    process.env.PRIVATE_EMAIL_ENABLED === "true" ||
-    currentConfig.privateEmail.enabled,
 
+  // Private email service
   getPrivateEmailService: () => ({
     enabled:
       process.env.PRIVATE_EMAIL_ENABLED || currentConfig.privateEmail.enabled,
