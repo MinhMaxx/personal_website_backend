@@ -86,8 +86,16 @@ router.post(
           ? `${configHelper.getProtocol()}://${configHelper.getServerUrl()}:${configHelper.getPort()}/testimonial/verify/${token}`
           : `${configHelper.getProtocol()}://${configHelper.getFrontendWebUrlLink()}/testimonial/verify/${token}`;
 
+      //Support using private email
+      let sender;
+      if (configHelper.getPrivateEmailService().enabled) {
+        sender = configHelper.getPrivateEmailService().user;
+      } else {
+        sender = configHelper.getNotifyEmailAccount().email;
+      }
+
       const mailOptions = {
-        from: configHelper.getNotifyEmailAccount().email,
+        from: sender,
         to: email,
         subject: "Please Confirm Your Testimonial for Binh Minh Nguyen",
         text: `Hello ${name},
@@ -112,8 +120,6 @@ router.post(
         <p>Best regards,</p>
         <p>Minh Nguyen</p>`,
       };
-
-      console.log();
 
       await transporter.sendMail(mailOptions);
 
@@ -166,10 +172,18 @@ router.get("/verify/:token", async (req, res) => {
     const html = `
       <p>There is a new testimonial pending approval from ${testimonial.name} (${testimonial.email}).</p>
       <p>Testimonial: "${testimonial.content}"</p>
-    `; // Modify the URL to where the admin can approve the testimonial
+    `;
+
+    //Support using private email
+    let sender;
+    if (configHelper.getPrivateEmailService().enabled) {
+      sender = configHelper.getPrivateEmailService().user;
+    } else {
+      sender = configHelper.getNotifyEmailAccount().email;
+    }
 
     const mailOptions = {
-      from: configHelper.getNotifyEmailAccount().email,
+      from: sender,
       to: adminEmail,
       subject,
       html,

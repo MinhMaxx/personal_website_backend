@@ -25,9 +25,17 @@ router.post("/submit", contactLimiter, async (req, res) => {
     // Destructuring the name, email, and message from the request body
     const { name, email, message } = req.body;
 
+    let sender;
+
+    if (configHelper.getPrivateEmailService().enabled) {
+      sender = configHelper.getPrivateEmailService().user;
+    } else {
+      sender = configHelper.getNotifyEmailAccount().email;
+    }
+
     // Mail options specifying sender, recipient, subject, and body
     const mailOptions = {
-      from: configHelper.getNotifyEmailAccount().email, // Use the email used to notify from config for the "from" field
+      from: sender,
       to: configHelper.getContactEmail(), // Destination email address as the personal email from config
       subject: `You have an message from ${name} at ${email}`, // Subject line of the email
       text: message, // Body of the email
