@@ -5,7 +5,7 @@ let transporter;
 
 if (configHelper.isPrivateEmailServiceEnabled()) {
   // This is for private email service
-  const transporter = nodemailer.createTransport({
+  transporter = nodemailer.createTransport({
     host: configHelper.getPrivateEmailService().host,
     port: configHelper.getPrivateEmailService().port,
     secure: configHelper.getPrivateEmailService().secure,
