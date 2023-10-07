@@ -5,20 +5,23 @@ let transporter;
 
 if (configHelper.isPrivateEmailServiceEnabled()) {
   // This is for private email service
-  transporter = nodemailer.createTransport({
+  const transporter = nodemailer.createTransport({
     host: configHelper.getPrivateEmailService().host,
     port: configHelper.getPrivateEmailService().port,
     secure: configHelper.getPrivateEmailService().secure,
     auth: {
-      user: configHelper.getPrivateEmailService().user,
-      pass: configHelper.getPrivateEmailService().pass,
+      user: configHelper.getPrivateEmailService().user, // Ensure this is getting the correct email
+      pass: configHelper.getPrivateEmailService().password, // Ensure this is getting the correct password
     },
-    debug: true, // Enable debug output
-    logger: true, // Log information in console
+    debug: true, // will log more information
+    logger: true, // will log information in console
   });
 
-  console.log("Email:", configHelper.getPrivateEmailService().user); // For debugging purposes only, remove afterwards
-  console.log("Password:", configHelper.getPrivateEmailService().password); // For debugging purposes only, mask or remove afterwards
+  console.log(configHelper.getPrivateEmailService().user); // For debug, ensure this is printing the correct email
+  console.log(
+    "Password is set:",
+    !!configHelper.getPrivateEmailService().password
+  ); // For debug, it will print true if password is set, false otherwise. Avoid logging the actual password in production.
 } else {
   // This is for services like Gmail, Yahoo, etc.
   transporter = nodemailer.createTransport({
