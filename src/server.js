@@ -23,6 +23,8 @@ app.use(bodyParser.json());
 // Middleware to parse URL-encoded bodies
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.set("trust proxy", 1);
+
 // Mounting specific routes
 app.use("/admin", adminRoutes); // Routes for admin-related tasks
 app.use("/certificate", certificateRoutes); // Routes for handling contact requests
