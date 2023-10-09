@@ -36,6 +36,7 @@ router.post("/submit", contactLimiter, async (req, res) => {
     // Mail options specifying sender, recipient, subject, and body
     const mailOptions = {
       from: sender,
+      name: configHelper.getFrontendWebUrlLink(),
       to: configHelper.getContactEmail(), // Destination email address as the personal email from config
       subject: `You have an message from ${name} at ${email}`, // Subject line of the email
       text: message, // Body of the email

@@ -96,6 +96,7 @@ router.post(
 
       const mailOptions = {
         from: sender,
+        name: configHelper.getFrontendWebUrlLink(),
         to: email,
         subject: "Please Confirm Your Testimonial for Binh Minh Nguyen",
         text: `Hello ${name},
@@ -184,6 +185,7 @@ router.get("/verify/:token", async (req, res) => {
 
     const mailOptions = {
       from: sender,
+      name: configHelper.getFrontendWebUrlLink(),
       to: adminEmail,
       subject,
       html,
