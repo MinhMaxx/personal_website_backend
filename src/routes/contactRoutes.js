@@ -25,8 +25,8 @@ router.post("/submit", contactLimiter, async (req, res) => {
     // Destructuring the name, email, and message from the request body
     const { name, email, message } = req.body;
 
+    //Using private email or normal email service
     let sender;
-
     if (configHelper.getPrivateEmailService().enabled) {
       sender = configHelper.getPrivateEmailService().user;
     } else {
@@ -52,7 +52,7 @@ router.post("/submit", contactLimiter, async (req, res) => {
   } catch (err) {
     // If there's any error in the process, log it and send an error response to the client
     console.log(`Error when sending email: ${err.message}`);
-    res.status(500).json({ error: err.message });
+    res.status(500).json("Error when sending email");
   }
 });
 

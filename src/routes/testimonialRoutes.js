@@ -86,7 +86,7 @@ router.post(
           ? `${configHelper.getProtocol()}://${configHelper.getServerUrl()}:${configHelper.getPort()}/testimonial/verify/${token}`
           : `${configHelper.getProtocol()}://${configHelper.getFrontendWebUrlLink()}/testimonial/verify/${token}`;
 
-      //Support using private email
+      //Using private email or normal email service
       let sender;
       if (configHelper.getPrivateEmailService().enabled) {
         sender = configHelper.getPrivateEmailService().user;
@@ -130,7 +130,7 @@ router.post(
       res.status(200).send("Please check your email for verification.");
     } catch (err) {
       console.log(err);
-      res.status(500).send(err.message);
+      res.status(500).send("Error when sending the verification email!");
     }
   }
 );
@@ -178,7 +178,7 @@ router.get("/verify/:token", async (req, res) => {
       <p>Testimonial: "${testimonial.content}"</p>
     `;
 
-    //Support using private email
+    //Using private email or normal email service
     let sender;
     if (configHelper.getPrivateEmailService().enabled) {
       sender = configHelper.getPrivateEmailService().user;
@@ -205,7 +205,7 @@ router.get("/verify/:token", async (req, res) => {
     res.status(200).send("Testimonial verified! Awaiting admin approval.");
   } catch (err) {
     console.log(err);
-    res.status(500).send(err.message);
+    res.status(500).send("Error when verifing testimonial");
   }
 });
 

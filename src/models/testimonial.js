@@ -32,6 +32,7 @@ const testimonialSchema = new mongoose.Schema({
   date: {
     type: Date,
     default: Date.now,
+    index: true,
   },
   adminApproved: {
     type: Boolean,
