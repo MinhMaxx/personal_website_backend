@@ -6,6 +6,10 @@ This is the backend service for my personal website. The project is designed to 
 
 This backend is essential for the full functionality of the frontend part of the website, which can be found [here](https://github.com/MinhMaxx/personal-website-frontend).
 
+## To-do
+- Implement Winston for logging.
+- Redesign .env - environment variables
+
 ## How To Run The Project
 
 ### Prerequisites
