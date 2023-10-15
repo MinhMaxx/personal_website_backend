@@ -36,7 +36,7 @@ const testimonialTokenSchema = new mongoose.Schema({
     type: Date,
     required: true,
     default: Date.now,
-    index: { expires: "300s" }, // This token will expire in 5 mins
+    index: { expires: "900s" }, // This token will expire in 15 mins
   },
 });
 

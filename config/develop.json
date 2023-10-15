@@ -24,7 +24,6 @@
       "password": ""
     },
     "contactEmail": "",
-    "tokenExpireDate": "",
     "jwtSecret": "",
     "frontendUrlWebUrlLink": "",
     "privateEmail": {

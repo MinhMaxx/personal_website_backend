@@ -12,7 +12,7 @@ const transporter = require("../helpers/mailerSetting");
 
 const testimonialLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 3, // limit each IP to 3 requests per windowMs
+  max: 5, // limit each IP to 5 requests per windowMs
   message:
     "Too many testimonials created from this IP, please try again after an hour",
 });
@@ -65,7 +65,7 @@ router.post(
 
       // Generate a random token for verification
       const token = crypto.randomBytes(16).toString("hex");
-      const expiryDate = Date.now() + 300000; // Token valid for 5 minutes
+      const expiryDate = Date.now() + 900000; // Token valid for 15 minutes
 
       const verifyToken = new TestimonialToken({
         name,
@@ -110,7 +110,7 @@ router.post(
 
           Or copy and paste the URL into your browser: ${verificationLink}
 
-          This link will expire in 5 minutes.
+          This link will expire in 15 minutes.
 
           Best regards,
           Minh Nguyen`,
@@ -120,7 +120,7 @@ router.post(
         <p>Thank you for your kind words about me. Your testimonial is: "${testimonial}"</p>
         <p>To confirm your testimonial, please <a href="${verificationLink}" style="text-decoration:none;color:#007BFF;">click here</a>.</p>
         <p>Or copy and paste this URL into your browser: <span style="word-wrap:break-word;">${verificationLink}</span></p>
-        <p><small>This link will expire in 5 minutes.</small></p>
+        <p><small>This link will expire in 15 minutes.</small></p>
         <p>Best regards,</p>
         <p>Minh Nguyen</p>`,
       };
