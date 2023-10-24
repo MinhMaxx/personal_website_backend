@@ -4,7 +4,8 @@
   "description": "",
   "main": "src/server.js",
   "scripts": {
-    "develop": "cross-env NODE_ENV=develop nodemon src/server.js"
+    "develop": "cross-env NODE_ENV=develop nodemon src/server.js",
+    "test": "MONGO_DATABASE=test ADMIN_TEST_USERNAME=username ADMIN_TEST_PASSWORD=password mocha ./tests/**/*.test.js"
   },
   "repository": {
     "type": "git",
@@ -28,5 +29,10 @@
     "mongoose": "^7.5.1",
     "nodemailer": "^6.9.5",
     "nodemon": "^3.0.1"
+  },
+  "devDependencies": {
+    "chai": "^4.3.10",
+    "mocha": "^10.2.0",
+    "supertest": "^6.3.3"
   }
 }

@@ -62,7 +62,6 @@ router.get("/", authMiddleware, (req, res) => {
 router.post("/logout", authMiddleware, async (req, res) => {
   try {
     const token = req.headers["authorization"].split(" ")[1];
-
     const newBlacklistedToken = new BlacklistedToken({
       token: token,
     });

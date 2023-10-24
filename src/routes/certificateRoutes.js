@@ -57,11 +57,7 @@ router.post("/", authenticateAdmin, certificateValidation, async (req, res) => {
   const certificate = new Certificate(req.body);
   try {
     await certificate.save();
-    res
-      .status(201)
-      .json(
-        `New certificate '${certificate.certificateName}' added successfully`
-      );
+    res.status(201).json(certificate);
   } catch (err) {
     res.status(500).send("Error saving the certificate");
   }
@@ -86,9 +82,7 @@ router.put(
       );
       if (!updatedCertificate)
         return res.status(404).send("Certificate not found");
-      res.json(
-        `Updated certificate '${updatedCertificate.certificateName}' successfully!`
-      );
+      res.json(updatedCertificate);
     } catch (err) {
       res.status(500).send("Error updating the certificate");
     }

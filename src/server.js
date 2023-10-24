@@ -14,6 +14,15 @@ const bodyParser = require("body-parser");
 // Initialize the Express app
 const app = express();
 
+// Start connection with MongoDB
+mongooseConnection()
+  .then(() => {
+    console.log("Connected to MongoDB successfully.");
+  })
+  .catch((err) => {
+    console.error("Failed to connect to MongoDB:", err);
+  });
+
 // Enable All CORS Requests
 app.use(cors());
 
@@ -35,19 +44,17 @@ app.use("/project", projectRoutes); // Routes for projects
 app.use("/testimonial", testimonialRoutes); // Routes for testimonials
 
 // Function to start the server and establish a connection to the MongoDB database
-const startServer = async () => {
-  try {
-    await mongooseConnection(); // Connecting to the MongoDB database
-
-    // Start the server and listen on the specified port
-    app.listen(configHelper.getPort(), () => {
-      console.log(`Server is running on port: ${configHelper.getPort()}`);
-      console.log(`Mode: ${configHelper.getMode()}`);
-    });
-  } catch (err) {
-    console.error("Failed to start server:", err);
-  }
+const startServer = () => {
+  // Start the server and listen on the specified port
+  app.listen(configHelper.getPort(), () => {
+    console.log(`Server is running on port: ${configHelper.getPort()}`);
+    console.log(`Mode: ${configHelper.getMode()}`);
+  });
 };
 
-// Invoke the function to start the server
-startServer();
+// If the server.js file is being run directly (not required by another module), start the server.
+if (require.main === module) {
+  startServer();
+}
+
+module.exports = app;

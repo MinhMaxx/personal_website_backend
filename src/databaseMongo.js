@@ -26,15 +26,11 @@ exports.mongooseConnection = async () => {
   //Invoked function expression to handle the actual connection
   (async () => {
     try {
-      console.log(`Connecting to MongoDB...`);
-
       // Attempt to connect to MongoDB with the constructed URI
       await mongoose.connect(mongoDB, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
       });
-
-      console.log(`Connected to MongoDB`);
     } catch (err) {
       // Log any error that occurs during connection
       console.error(`Database error: ${err.message}`);

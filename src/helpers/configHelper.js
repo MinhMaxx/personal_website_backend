@@ -1,8 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 
-// Set the current environment, defaulting to "development" if not explicitly set
-const env = process.env.NODE_ENV || "development";
+// Set the current environment, defaulting to "develop" if not explicitly set
+const env = process.env.NODE_ENV || "develop";
 
 const configFile = path.join(__dirname, "../../config", `${env}.json`);
 const rawData = fs.readFileSync(configFile, "utf-8");
