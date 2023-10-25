@@ -4,7 +4,7 @@ const sinon = require("sinon");
 const app = require("../../src/server");
 const transporter = require("../../src/helpers/mailerSetting");
 
-// Test suite for the Contact Routes
+// Main test suite for the Contact Routes
 describe("Contact Routes", () => {
   // Test suite for the POST /contact endpoint
   describe("POST /contact", () => {

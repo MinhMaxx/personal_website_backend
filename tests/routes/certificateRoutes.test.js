@@ -254,5 +254,10 @@ describe("Certificate Routes", async () => {
       const res = await request(app).delete(`/certificate/${certificateId}`);
       expect(res.status).to.equal(401);
     });
+
+    // Cleanup: Remove the created certificate after test completion (if test failed)
+    after(async () => {
+      await Certificate.findByIdAndDelete(certificateId);
+    });
   });
 });

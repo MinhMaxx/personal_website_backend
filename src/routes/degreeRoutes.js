@@ -16,6 +16,7 @@ const degreeValidation = [
     .optional({ checkFalsy: true })
     .isDate()
     .withMessage("End Date must be a valid date"),
+  body("description").not().isEmpty().withMessage("Description is required"),
 ];
 
 // Fetch all degrees
