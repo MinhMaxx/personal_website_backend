@@ -13,12 +13,6 @@ const contactLimiter = rateLimit({
     "Too many requests created from this IP, please try again after an hour",
 });
 
-// Define a route to serve the contact form page
-router.get("/", (req, res) => {
-  // TODO: Render a proper contact form template instead of sending a placeholder text
-  res.send("Contact form page");
-});
-
 // Define a route to handle the submission of the contact form
 router.post("/submit", contactLimiter, async (req, res) => {
   try {
@@ -50,8 +44,7 @@ router.post("/submit", contactLimiter, async (req, res) => {
     // If email was sent successfully, send a success response back to the client
     res.status(200).json({ status: "Message sent" });
   } catch (err) {
-    // If there's any error in the process, log it and send an error response to the client
-    console.log(`Error when sending email: ${err.message}`);
+    // If there's any error in the process, send an error response to the client
     res.status(500).json("Error when sending email");
   }
 });
