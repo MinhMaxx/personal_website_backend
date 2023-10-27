@@ -1,10 +1,28 @@
 const request = require("supertest");
+const sinon = require("sinon");
 const { expect } = require("chai");
 const app = require("../../src/server");
 const Certificate = require("../../src/models/certificate");
+const jwt = require("jsonwebtoken");
 
 // Main test suite for the Certificate routes
 describe("Certificate Routes", async () => {
+  let token;
+
+  // Run before all tests in this describe block
+  before(() => {
+    // Stubbing jwt.verify method
+    token = sinon.stub(jwt, "verify");
+    // Setup stub to simulate successful token verification
+    token.yields(null, { username: process.env.ADMIN_TEST_USERNAME });
+  });
+
+  // Run after all tests in this describe block
+  after(() => {
+    // Restore the original behavior
+    token.restore();
+  });
+
   // Test suite for GET request to fetch all certificates
   describe("GET /certificate", () => {
     it("should fetch all certificates", async () => {
@@ -44,20 +62,6 @@ describe("Certificate Routes", async () => {
 
   // Test suite for creating a new certificate
   describe("POST /certificate", () => {
-    let token;
-
-    // Before each test, authenticate to get a token for making authorized requests
-    beforeEach(async () => {
-      const validCredentials = {
-        username: process.env.ADMIN_TEST_USERNAME,
-        password: process.env.ADMIN_TEST_PASSWORD,
-      };
-      const loginRes = await request(app)
-        .post("/admin/login")
-        .send(validCredentials);
-      token = loginRes.body.token;
-    });
-
     // Test case for invalid certificate data
     it("should return a 400 for invalid certificate data", async () => {
       const invalidData = {
@@ -107,20 +111,7 @@ describe("Certificate Routes", async () => {
 
   // Test suite for updating an existing certificate
   describe("PUT /certificate/:id", () => {
-    let token;
     let certificateId;
-
-    // Authenticate and get a token for making authorized requests
-    beforeEach(async () => {
-      const validCredentials = {
-        username: process.env.ADMIN_TEST_USERNAME,
-        password: process.env.ADMIN_TEST_PASSWORD,
-      };
-      const loginRes = await request(app)
-        .post("/admin/login")
-        .send(validCredentials);
-      token = loginRes.body.token;
-    });
 
     // Before running tests, create a sample certificate for testing
     before(async () => {
@@ -203,20 +194,7 @@ describe("Certificate Routes", async () => {
 
   // Test suite for deleting an existing certificate
   describe("DELETE /certificate/:id", () => {
-    let token;
     let certificateId;
-
-    // Authenticate and get a token for making authorized requests
-    beforeEach(async () => {
-      const validCredentials = {
-        username: process.env.ADMIN_TEST_USERNAME,
-        password: process.env.ADMIN_TEST_PASSWORD,
-      };
-      const loginRes = await request(app)
-        .post("/admin/login")
-        .send(validCredentials);
-      token = loginRes.body.token;
-    });
 
     // Before running tests, create a sample certificate for testing
     before(async () => {

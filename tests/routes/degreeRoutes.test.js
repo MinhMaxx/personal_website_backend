@@ -1,10 +1,28 @@
 const request = require("supertest");
+const sinon = require("sinon");
 const { expect } = require("chai");
 const app = require("../../src/server");
 const Degree = require("../../src/models/degree");
+const jwt = require("jsonwebtoken");
 
 // Main test suite for Degree Routes testing
 describe("Degree Routes", async () => {
+  let token;
+
+  // Run before all tests in this describe block
+  before(() => {
+    // Stubbing jwt.verify method
+    token = sinon.stub(jwt, "verify");
+    // Setup stub to simulate successful token verification
+    token.yields(null, { username: process.env.ADMIN_TEST_USERNAME });
+  });
+
+  // Run after all tests in this describe block
+  after(() => {
+    // Restore the original behavior
+    token.restore();
+  });
+
   // Test for for GET request to fetch all degrees
   describe("GET /degree", () => {
     it("should fetch all degrees", async () => {
@@ -46,20 +64,6 @@ describe("Degree Routes", async () => {
 
   // Test suite for creating a new degree
   describe("POST /degree", () => {
-    let token;
-
-    // Before each test, authenticate to get a token for making authorized requests
-    beforeEach(async () => {
-      const validCredentials = {
-        username: process.env.ADMIN_TEST_USERNAME,
-        password: process.env.ADMIN_TEST_PASSWORD,
-      };
-      const loginRes = await request(app)
-        .post("/admin/login")
-        .send(validCredentials);
-      token = loginRes.body.token;
-    });
-
     // Test case for invalid degree data
     it("should return a 400 for invalid degree data", async () => {
       const invalidData = {
@@ -116,20 +120,7 @@ describe("Degree Routes", async () => {
 
   // Test suite for updating an existing degree
   describe("PUT /degree/:id", () => {
-    let token;
     let degreeId;
-
-    // Authenticate and get a token for making authorized requests
-    beforeEach(async () => {
-      const validCredentials = {
-        username: process.env.ADMIN_TEST_USERNAME,
-        password: process.env.ADMIN_TEST_PASSWORD,
-      };
-      const loginRes = await request(app)
-        .post("/admin/login")
-        .send(validCredentials);
-      token = loginRes.body.token;
-    });
 
     // Before running tests, create a sample degree for testing
     before(async () => {
@@ -219,20 +210,7 @@ describe("Degree Routes", async () => {
 
   // Test for deleting a existing degree
   describe("DELETE /degree/:id", () => {
-    let token;
     let degreeId;
-
-    // Authenticate and get a token for making authorized requests
-    beforeEach(async () => {
-      const validCredentials = {
-        username: process.env.ADMIN_TEST_USERNAME,
-        password: process.env.ADMIN_TEST_PASSWORD,
-      };
-      const loginRes = await request(app)
-        .post("/admin/login")
-        .send(validCredentials);
-      token = loginRes.body.token;
-    });
 
     // Before running tests, create a sample degree for testing
     before(async () => {

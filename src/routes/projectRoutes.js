@@ -24,6 +24,7 @@ const projectValidation = [
     .isDate()
     .withMessage("End Date must be a valid date"),
   body("technologiesUsed")
+    .optional()
     .isArray()
     .withMessage("Technologies Used must be an array of strings"),
   body("link")
@@ -54,11 +55,16 @@ router.get("/:id", async (req, res) => {
 });
 
 // Add a new project
-router.post("", authenticateAdmin, async (req, res) => {
+router.post("", authenticateAdmin, projectValidation, async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   const project = new Project(req.body);
   try {
     await project.save();
-    res.status(201).json(`New project ${project.name} added successfully`);
+    res.status(201).json(project);
   } catch (err) {
     res.status(500).send("Error saving the project");
   }
@@ -78,7 +84,7 @@ router.put("/:id", authenticateAdmin, projectValidation, async (req, res) => {
       { new: true }
     );
     if (!updatedProject) return res.status(404).send("Project not found");
-    res.json(`Update project ${updatedProject.name} successfully!`);
+    res.json(updatedProject);
   } catch (err) {
     res.status(500).send("Error updating the project");
   }

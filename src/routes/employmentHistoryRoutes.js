@@ -27,11 +27,11 @@ const employmentHistoryValidation = [
     .withMessage("End Date must be a valid date"),
 
   body("description")
+    .optional()
     .isString()
     .withMessage("Description must be a string")
     .trim()
-    .isLength({ min: 1 })
-    .withMessage("Description is required"),
+    .isLength({ min: 1 }),
 ];
 
 // Fetch all employment histories
@@ -69,11 +69,7 @@ router.post(
     const history = new EmploymentHistory(req.body);
     try {
       await history.save();
-      res
-        .status(201)
-        .send(
-          `New employment history for ${history.company} added successfully`
-        );
+      res.status(201).send(history);
     } catch (err) {
       res.status(500).send("Error saving the employment history");
     }
@@ -99,9 +95,7 @@ router.put(
       );
       if (!updatedHistory)
         return res.status(404).send("Employment history not found");
-      res.send(
-        `Updated employment history for ${updatedHistory.company} successfully!`
-      );
+      res.send(updatedHistory);
     } catch (err) {
       res.status(500).send("Error updating the employment history");
     }

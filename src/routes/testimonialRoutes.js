@@ -34,6 +34,8 @@ router.post(
     check("name").notEmpty().withMessage("Name is required"),
     check("email").isEmail().withMessage("Provide a valid email address"),
     check("testimonial").notEmpty().withMessage("Testimonial cannot be empty"),
+    check("company").notEmpty().withMessage("Company is required"),
+    check("position").notEmpty().withMessage("Position is required"),
   ],
   testimonialLimiter,
   async (req, res) => {
@@ -82,7 +84,7 @@ router.post(
 
       //Switch to using frontend link in non-development mode
       const verificationLink =
-        configHelper.getMode() == "development"
+        configHelper.getMode() == "develop"
           ? `${configHelper.getProtocol()}://${configHelper.getServerUrl()}:${configHelper.getPort()}/testimonial/verify/${token}`
           : `${configHelper.getProtocol()}://${configHelper.getFrontendWebUrlLink()}/testimonial/verify/${token}`;
 
@@ -233,10 +235,7 @@ router.put("/approve/:id", authenticateAdmin, async (req, res) => {
 
     if (!testimonial) return res.status(404).send("Testimonial not found");
 
-    res.status(200).json({
-      message: "Testimonial approved successfully!",
-      testimonial,
-    });
+    res.status(200).json(testimonial);
   } catch (err) {
     res.status(500).send("Error approving the testimonial");
   }
@@ -247,7 +246,7 @@ router.delete("/:id", authenticateAdmin, async (req, res) => {
   try {
     const testimonial = await Testimonial.findByIdAndDelete(req.params.id);
     if (!testimonial) return res.status(404).send("Testimonial not found");
-    res.send(`Deleted testimonial with ID: ${req.params.id}`);
+    res.status(200).send(`Deleted testimonial with ID: ${req.params.id}`);
   } catch (err) {
     res.status(500).send("Error deleting the testimonial");
   }
