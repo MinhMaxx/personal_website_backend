@@ -8,14 +8,19 @@ const TestimonialToken = require("../../src/models/testimonialToken");
 const transporter = require("../../src/helpers/mailerSetting");
 const jwt = require("jsonwebtoken");
 
+// Main test suite for Testimonial Routes
 describe("Testimonial Routes", () => {
   let token;
   let testimonialId;
   let sendMailStub;
 
+  // Initialization steps to be performed before running the tests
   before(async () => {
+    // Stubbing the JWT token verification process
     token = sinon.stub(jwt, "verify");
     token.yields(null, { username: process.env.ADMIN_TEST_USERNAME });
+
+    // Create and save a test Testimonial record
     const testimonial = new Testimonial({
       name: "Test Name",
       email: "test@example.com",
@@ -25,16 +30,21 @@ describe("Testimonial Routes", () => {
     });
     await testimonial.save();
     testimonialId = testimonial._id;
+
+    // Stub the sendMail function of the email transporter
     sendMailStub = sinon
       .stub(transporter, "sendMail")
       .returns(Promise.resolve());
   });
 
+  // Cleanup steps to be performed after running all the tests
   after(() => {
+    // Restore stubs and mocks to their original state
     token.restore();
     sendMailStub.restore();
   });
 
+  // Test case for GET /testimonial route
   describe("GET /testimonial", () => {
     it("should fetch all approved testimonials", async () => {
       const res = await request(app).get("/testimonial");
@@ -43,6 +53,7 @@ describe("Testimonial Routes", () => {
     });
   });
 
+  // Test case for POST /testimonial/submit route
   describe("POST /testimonial/submit", () => {
     it("should successfully submit a testimonial", async () => {
       const testimonialData = {
@@ -69,9 +80,11 @@ describe("Testimonial Routes", () => {
     });
   });
 
+  // Test case for GET /testimonial/verify/:token route
   describe("GET /testimonial/verify/:token", () => {
     let verificationToken;
 
+    // Setup steps to be performed before this test case
     before(async () => {
       // Create a sample TestimonialToken
       const tokenData = {
@@ -107,6 +120,7 @@ describe("Testimonial Routes", () => {
       expect(sendMailStub.called).to.be.true;
     });
 
+    // Cleanup steps to be performed after this test case
     after(async () => {
       await TestimonialToken.deleteMany({ token: verificationToken });
       await Testimonial.deleteMany({
@@ -115,6 +129,7 @@ describe("Testimonial Routes", () => {
     });
   });
 
+  // Test case for GET /testimonial/pending route
   describe("GET /testimonial/pending", () => {
     it("should fetch all non-approved testimonials", async () => {
       const res = await request(app)
@@ -125,6 +140,7 @@ describe("Testimonial Routes", () => {
     });
   });
 
+  // Test case for PUT /testimonial/approve/:id route
   describe("PUT /testimonial/approve/:id", () => {
     it("should approve a testimonial", async () => {
       const res = await request(app)
@@ -135,9 +151,9 @@ describe("Testimonial Routes", () => {
     });
   });
 
+  // Test case for DELETE /testimonial/:id route
   describe("DELETE /testimonial/:id", () => {
     it("should delete a testimonial", async () => {
-      console.log(testimonialId);
       const res = await request(app)
         .delete(`/testimonial/${testimonialId}`)
         .set("Authorization", `Bearer ${token}`);
@@ -147,6 +163,7 @@ describe("Testimonial Routes", () => {
       );
     });
 
+    // Cleanup steps to be performed after this test case
     after(async () => {
       await Testimonial.findByIdAndDelete(testimonialId);
     });

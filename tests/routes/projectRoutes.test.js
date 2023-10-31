@@ -5,25 +5,27 @@ const app = require("../../src/server");
 const Project = require("../../src/models/project");
 const jwt = require("jsonwebtoken");
 
-// Main test suite for the Project routes
+// Main test suite for Project routes
 describe("Project Routes", () => {
   let token;
 
-  // Run before all tests in this describe block
+  // Runs before all tests in this suite
   before(() => {
-    // Stubbing jwt.verify method
+    // Stubbing the jwt.verify method for token verification
     token = sinon.stub(jwt, "verify");
-    // Setup stub to simulate successful token verification
+    // Configuring the stub to simulate successful token verification
     token.yields(null, { username: process.env.ADMIN_TEST_USERNAME });
   });
 
-  // Run after all tests in this describe block
+  // Cleanup: Runs after all tests in this suite
   after(() => {
-    // Restore the original behavior
+    // Restoring the original jwt.verify method
     token.restore();
   });
 
+  // Test suite for GET /project endpoint
   describe("GET /project", () => {
+    // Test case for fetching all projects
     it("should fetch all projects", async () => {
       const res = await request(app).get("/project");
       expect(res.status).to.equal(200);
@@ -31,10 +33,12 @@ describe("Project Routes", () => {
     });
   });
 
+  // Test suite for GET /project/:id endpoint
   describe("GET /project/:id", () => {
     let projectId;
-
+    // Runs before tests in this inner suite
     before(async () => {
+      // Creating a test project and saving it to the database
       const project = new Project({
         name: "Test Project",
         description: "Test Description",
@@ -44,6 +48,7 @@ describe("Project Routes", () => {
       projectId = project._id;
     });
 
+    // Test case for fetching a valid project
     it("should fetch a valid project", async () => {
       const res = await request(app).get(`/project/${projectId}`);
       expect(res.status).to.equal(200);
@@ -51,12 +56,16 @@ describe("Project Routes", () => {
       expect(res.body).to.have.property("description", "Test Description");
     });
 
+    // Cleanup: Runs after tests in this inner suite
     after(async () => {
+      // Deleting the test project from the database
       await Project.findByIdAndDelete(projectId);
     });
   });
 
+  // Test suite for POST /project endpoint
   describe("POST /project", () => {
+    // Test case for invalid project data
     it("should return a 400 for invalid project data", async () => {
       const invalidData = {
         name: "",
@@ -69,6 +78,7 @@ describe("Project Routes", () => {
       expect(res.status).to.equal(400);
     });
 
+    // Test case for successfully creating a project
     it("should successfully create a project", async () => {
       const projectData = {
         name: "New Project",
@@ -82,17 +92,21 @@ describe("Project Routes", () => {
       expect(res.status).to.equal(201);
       expect(res.body).to.have.property("name", "New Project");
 
-      // Cleanup
+      // Cleanup: Runs after tests in this inner suite
       after(async () => {
+        // Deleting the newly created project from the database
         await Project.findByIdAndDelete(res.body._id);
       });
     });
   });
 
+  // Test suite for PUT /project/:id endpoint
   describe("PUT /project/:id", () => {
     let projectId;
 
+    // Runs before tests in this inner suite
     before(async () => {
+      // Creating a test project and saving it to the database
       const project = new Project({
         name: "Project to Update",
         description: "Description to update",
@@ -102,6 +116,7 @@ describe("Project Routes", () => {
       projectId = project._id;
     });
 
+    // Test case for successfully updating a project
     it("should successfully update a project", async () => {
       const updateData = {
         name: "Updated Project",
@@ -117,15 +132,20 @@ describe("Project Routes", () => {
       expect(res.body).to.have.property("description", "Updated Description");
     });
 
+    // Cleanup: Runs after tests in this inner suite
     after(async () => {
+      // Deleting the test project from the database
       await Project.findByIdAndDelete(projectId);
     });
   });
 
+  // Test suite for DELETE /project/:id endpoint
   describe("DELETE /project/:id", () => {
     let projectId;
 
+    // Runs before tests in this inner suite
     before(async () => {
+      // Creating a test project and saving it to the database
       const project = new Project({
         name: "Project to Delete",
         description: "Description to delete",
@@ -135,6 +155,7 @@ describe("Project Routes", () => {
       projectId = project._id;
     });
 
+    // Test case for successfully deleting a project
     it("should successfully delete a project", async () => {
       const res = await request(app)
         .delete(`/project/${projectId}`)
@@ -143,7 +164,9 @@ describe("Project Routes", () => {
       expect(res.text).to.include(`Deleted project with ID: ${projectId}`);
     });
 
+    // Cleanup: Runs after tests in this inner suite
     after(async () => {
+      // Deleting the test project from the database (if not already deleted)
       await Project.findByIdAndDelete(projectId);
     });
   });
